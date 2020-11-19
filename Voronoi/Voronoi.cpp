@@ -1,21 +1,26 @@
 #include "Voronoi.h"
 
-Voronoi::Voronoi(DistanceType distanceType, int width, int height, int randomPointCount)
+cv::Mat Voronoi::process(DistanceType distanceType, ProcessingType processingType, int width, int height, int randomPointCount)
 {
-    _distanceType = distanceType;
-    _width = width;
-    _height = height;
-    _randomPointCount = randomPointCount;
+    switch (processingType)
+    {
+        case Bruteforce:
+            return processBruteforce(distanceType, width, height, randomPointCount);
+        case Sequential:
+            return processSequential(distanceType, width, height, randomPointCount);
+        default:
+            return cv::Mat(0, 0, CV_8UC3);
+    }
 }
 
-void Voronoi::Process()
+cv::Mat Voronoi::processBruteforce(DistanceType distanceType, int width, int height, int randomPointCount)
 {
-    _result = cv::Mat(_height, _width, CV_8UC3);
-    auto randomPoints = generateRandomPoints();
+    auto result = cv::Mat(height, width, CV_8UC3);
+    auto randomPoints = generateRandomPoints(width, height, randomPointCount);
 
-    for (int x = 0; x < _width; ++x)
+    for (int x = 0; x < width; ++x)
     {
-        for (auto y = 0; y < _height; y++)
+        for (auto y = 0; y < height; y++)
         {
             auto shortest = std::numeric_limits<float>::max();
             auto shortestPoint = randomPoints[0];
@@ -23,34 +28,33 @@ void Voronoi::Process()
             auto p = cv::Point(x, y);
 
             for (auto point : randomPoints) {
-                auto distance = getDistance(point, p);
+                auto distance = getDistance(distanceType, point, p);
                 if (distance < shortest) {
                     shortest = distance;
                     shortestPoint = point;
                 }
             }
 
-            _result.at<cv::Vec3b>(y,x) = shortestPoint.getColor();
-
-            //_result.at<cv::Vec3i>(p) = cv::Vec3i(color.getRed(), color.getGreen(), color.getBlue());
+            result.at<cv::Vec3b>(y,x) = shortestPoint.getColor();
         }
     }
+
+    return result;
 }
 
-void Voronoi::Display()
+cv::Mat Voronoi::processSequential(DistanceType distanceType, int width, int height, int randomPointCount)
 {
-    cv::imshow("Display window", _result);
-    while(cv::waitKey(1) != 27);
+    return cv::Mat();
 }
 
-std::vector<VoronoiPoint> Voronoi::generateRandomPoints()
+std::vector<VoronoiPoint> Voronoi::generateRandomPoints(int width, int height, int randomPointCount)
 {
     auto result = std::vector<VoronoiPoint>();
 
-    for (auto i = 0; i < _randomPointCount; i++)
+    for (auto i = 0; i < randomPointCount; i++)
     {
-        auto x = std::rand() % _width;
-        auto y = std::rand() % _height;
+        auto x = std::rand() % width;
+        auto y = std::rand() % height;
         auto r = std::rand() % 255;
         auto g = std::rand() % 255;
         auto b = std::rand() % 255;
@@ -61,11 +65,11 @@ std::vector<VoronoiPoint> Voronoi::generateRandomPoints()
     return result;
 }
 
-float Voronoi::getDistance(VoronoiPoint &point, cv::Point &position)
+float Voronoi::getDistance(DistanceType distanceType, VoronoiPoint &point, cv::Point &position)
 {
     auto pp = point.getPosition();
 
-    switch (_distanceType)
+    switch (distanceType)
     {
         case Euclidean:
             return std::sqrt((pp.x - position.x) * (pp.x - position.x) + (pp.y - position.y) * (pp.y - position.y));
