@@ -11,7 +11,8 @@ public:
     cv::Mat process(DistanceType distanceType, ProcessingType processingType, int width, int height, int randomPointCount);
 private:
     cv::Mat processBruteforce(DistanceType distanceType, int width, int height, int randomPointCount);
-    cv::Mat processSequential(DistanceType distanceType, int width, int height, int randomPointCount);
+    cv::Mat processSequential(int width, int height, int randomPointCount);
     float getDistance(DistanceType distanceType, VoronoiPoint &point, cv::Point &position);
     std::vector<VoronoiPoint> generateRandomPoints(int width, int height, int randomPointCount);
+    std::optional<VoronoiPoint> getPointAt(std::vector<VoronoiPoint> &vector, cv::Point &position);
 };

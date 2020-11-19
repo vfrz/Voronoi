@@ -22,23 +22,27 @@ The goal is to create a random Voronoi diagram using multiple distance algorithm
 
 ## Usage
 
-`Voronoi {DistanceAlgorithm} {Width} {Height} {RandomPointCount}`
+`Voronoi {DistanceAlgorithm} {ProcessingType} {Width} {Height} {RandomPointCount}`
 
 Available distance algorithms:
 - 0 = Euclidean `Sqrt((x1 - x2)²+(y1-y2)²)`
 - 1 = Manhattan `|x1-x2|+|y1-y2|`
 - 2 = Chebyshev `Max(|x1-x2|,|y1-y2|)` 
 
+Available processing type:
+- 0 = Bruteforce
+- 1 = Sequential (Distance algorithm is ignored when using sequential processing)
+
 ### Examples
 
-`Voronoi 0 512 512 128`
+`Voronoi 0 0 512 512 128`
 
 ![](Results/Euclidean_512_512_128.png)
 
-`Voronoi 1 512 512 128`
+`Voronoi 1 0 512 512 128`
 
 ![](Results/Manhattan_512_512_128.png)
 
-`Voronoi 2 512 512 128`
+`Voronoi 2 0 512 512 128`
 
 ![](Results/Chebyshev_512_512_128.png)
