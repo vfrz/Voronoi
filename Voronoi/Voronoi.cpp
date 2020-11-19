@@ -164,14 +164,48 @@ std::vector<VoronoiPoint> Voronoi::generateRandomPoints(int width, int height, i
     {
         auto x = std::rand() % width;
         auto y = std::rand() % height;
-        auto r = std::rand() % 255;
-        auto g = std::rand() % 255;
-        auto b = std::rand() % 255;
-        auto point = VoronoiPoint(cv::Point(x, y), cv::Vec3b(r, g, b));
+        auto color = generateRandomColor(false);
+        auto point = VoronoiPoint(cv::Point(x, y), color);
         result.emplace_back(point);
     }
 
     return result;
+}
+
+cv::Vec3b Voronoi::generateRandomColor(bool flatColors)
+{
+    if (flatColors)
+    {
+        auto colors = new cv::Vec3b[20]{
+                cv::Vec3b(26, 188, 156),
+                cv::Vec3b(46, 204, 113),
+                cv::Vec3b(52, 152, 219),
+                cv::Vec3b(155, 89, 182),
+                cv::Vec3b(52, 73, 94),
+                cv::Vec3b(22, 160, 133),
+                cv::Vec3b(39, 174, 96),
+                cv::Vec3b(41, 128, 185),
+                cv::Vec3b(142, 68, 173),
+                cv::Vec3b(44, 62, 80),
+                cv::Vec3b(241, 196, 15),
+                cv::Vec3b(230, 126, 34),
+                cv::Vec3b(231, 76, 60),
+                cv::Vec3b(236, 240, 241),
+                cv::Vec3b(149, 165, 166),
+                cv::Vec3b(243, 156, 18),
+                cv::Vec3b(211, 84, 0),
+                cv::Vec3b(192, 57, 43),
+                cv::Vec3b(189, 195, 199),
+                cv::Vec3b(127, 140, 141)
+        };
+        auto color = colors[rand() % 20];
+        return cv::Vec3b(color[2], color[1], color[0]);
+    }
+
+    auto r = std::rand() % 255;
+    auto g = std::rand() % 255;
+    auto b = std::rand() % 255;
+    return cv::Vec3b(b, g, r);
 }
 
 float Voronoi::getDistance(DistanceType distanceType, VoronoiPoint &point, cv::Point &position)
